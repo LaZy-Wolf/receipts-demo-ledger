@@ -1,3 +1,4 @@
+import calendar
 from datetime import date
 from decimal import Decimal
 
@@ -7,7 +8,9 @@ from .money import to_money
 def add_months(d: date, months: int) -> date:
     """Return the same day-of-month `months` later."""
     m = d.month - 1 + months
-    return d.replace(year=d.year + m // 12, month=m % 12 + 1)
+    year, month = d.year + m // 12, m % 12 + 1
+    # Clamp to the last day of the target month (Jan 31 + 1 month -> Feb 28).
+    return date(year, month, min(d.day, calendar.monthrange(year, month)[1]))
 
 
 def billing_periods(start: date, end: date, months: int = 1) -> list[tuple[date, date]]:
@@ -19,10 +22,8 @@ def billing_periods(start: date, end: date, months: int = 1) -> list[tuple[date,
     """
     periods = []
     current = start
-    i = 0
     while current < end:
-        i += 1
-        nxt = min(add_months(start, i * months), end)
+        nxt = min(add_months(current, months), end)
         periods.append((current, nxt))
         current = nxt
     return periods
