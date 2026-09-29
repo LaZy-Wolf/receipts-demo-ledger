@@ -1,3 +1,5 @@
+import csv
+import io
 from decimal import Decimal
 
 from .invoice import Line
@@ -9,11 +11,10 @@ def load_lines(text: str) -> list[Line]:
     The first row is a header with at least description, quantity and unit_price.
     Optional columns: tax_rate, discount.
     """
-    rows = [row.split(",") for row in text.strip().splitlines()]
-    header = [h.strip() for h in rows[0]]
+    reader = csv.DictReader(io.StringIO(text.strip()), skipinitialspace=True)
     lines = []
-    for row in rows[1:]:
-        rec = dict(zip(header, (cell.strip() for cell in row)))
+    for row in reader:
+        rec = {key.strip(): (value or "").strip() for key, value in row.items() if key}
         lines.append(Line(
             description=rec["description"],
             quantity=int(rec["quantity"]),
