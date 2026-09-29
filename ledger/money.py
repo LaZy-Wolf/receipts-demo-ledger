@@ -13,5 +13,7 @@ def allocate(total, parts: int) -> list[Decimal]:
     if parts <= 0:
         raise ValueError("parts must be positive")
     total = to_money(total)
-    share = to_money(total / parts)
-    return [share] * parts
+    cents = int(total / CENT)
+    base, extra = divmod(cents, parts)
+    # Leftover cents go to the first parts, so no two parts differ by more than a cent.
+    return [(base + (1 if i < extra else 0)) * CENT for i in range(parts)]
