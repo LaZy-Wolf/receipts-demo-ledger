@@ -1,4 +1,4 @@
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import ROUND_HALF_UP, ROUND_UP, Decimal
 
 CENT = Decimal("0.01")
 
@@ -13,5 +13,6 @@ def allocate(total, parts: int) -> list[Decimal]:
     if parts <= 0:
         raise ValueError("parts must be positive")
     total = to_money(total)
-    share = to_money(total / parts)
-    return [share] * parts
+    share = (total / parts).quantize(CENT, rounding=ROUND_UP)
+    # The last part absorbs the rounding so the parts always sum to the total.
+    return [share] * (parts - 1) + [total - share * (parts - 1)]
