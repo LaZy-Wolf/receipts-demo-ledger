@@ -13,7 +13,7 @@ def load_lines(text: str) -> list[Line]:
     header = [h.strip() for h in rows[0]]
     lines = []
     for row in rows[1:]:
-        rec = dict(zip(header, (cell.strip() for cell in row)))
+        rec = dict(zip(header, (cell.strip().strip('"') for cell in row)))
         lines.append(Line(
             description=rec["description"],
             quantity=int(rec["quantity"]),
