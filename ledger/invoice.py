@@ -21,7 +21,7 @@ class Line:
 
     @property
     def tax(self) -> Decimal:
-        return to_money(self.quantity * self.unit_price * self.tax_rate)
+        return to_money(self.net * self.tax_rate)
 
 
 @dataclass
